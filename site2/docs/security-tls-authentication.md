@@ -19,20 +19,20 @@ The biggest difference between client certs and server certs is that the **commo
 First, you need to enter the following command to generate the key :
 
 ```bash
-$ openssl genrsa -out admin.key.pem 2048
+openssl genrsa -out admin.key.pem 2048
 ```
 
 Similar to the broker, the client expects the key to be in [PKCS 8](https://en.wikipedia.org/wiki/PKCS_8) format, so you need to convert it by entering the following command:
 
 ```bash
-$ openssl pkcs8 -topk8 -inform PEM -outform PEM \
+openssl pkcs8 -topk8 -inform PEM -outform PEM \
       -in admin.key.pem -out admin.key-pk8.pem -nocrypt
 ```
 
 Next, enter the command below to generate the certificate request. When you are asked for a **common name**, enter the **role token** that you want this key pair to authenticate a client as.
 
 ```bash
-$ openssl req -config openssl.cnf \
+openssl req -config openssl.cnf \
       -key admin.key.pem -new -sha256 -out admin.csr.pem
 ```
 > Note
@@ -41,7 +41,7 @@ $ openssl req -config openssl.cnf \
 Then, enter the command below to sign with request with the certificate authority. Note that the client certs uses the **usr_cert** extension, which allows the cert to be used for client authentication.
 
 ```bash
-$ openssl ca -config openssl.cnf -extensions usr_cert \
+openssl ca -config openssl.cnf -extensions usr_cert \
       -days 1000 -notext -md sha256 \
       -in admin.csr.pem -out admin.cert.pem
 ```
@@ -52,8 +52,8 @@ You can get a cert, `admin.cert.pem`, and a key, `admin.key-pk8.pem` from this c
 > If the "unable to load CA private key" error occurs and the reason of this error is "No such file or directory: /etc/pki/CA/private/cakey.pem" in this step. Try the command below:
 >
 > ```bash
-> $ cd /etc/pki/tls/misc/CA
-> $ ./CA -newca
+> cd /etc/pki/tls/misc/CA
+> ./CA -newca
 > ```
 >
 > to generate `cakey.pem` .
